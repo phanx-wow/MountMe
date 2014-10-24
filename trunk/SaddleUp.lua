@@ -12,39 +12,37 @@ button:SetAttribute("type", "macro")
 local _, class = UnitClass("player")
 local MOUNT_LINE, MOUNT_CONDITION, MACRO_LINES = 1
 
+local MACRO_TEMPLATE = {
+	format('/stopmacro [flying,nomod:%s]', MOD_DISMOUNT_FLYING),
+	'/changeactionbar [form] 1',
+	'/cancelform [form]',
+	'/dismount [mounted]',
+	'/leavevehicle [canexitvehicle]',
+}
+
 ------------------------------------------------------------------------
 if class == "DRUID" then
 	local SPELL_TRAVEL_FORM = GetSpellInfo(783)
-	MOUNT_CONDITION = format('[noform,nomounted,nocombat,outdoors,noswimming,mod:%s]', MOD_TRAVEL_FORM)
+	MOUNT_CONDITION = format('/run if SecureCmdOptionParse("[nocombat,noform,nomounted,noswimming,outdoors,nomod:%s]', MOD_TRAVEL_FORM)
 	MACRO_LINES = {
 		format('/run if SecureCmdOptionParse("%s") and not UnitInVehicle("player") and not IsPlayerMoving() then C_MountJournal.Summon(0) end', MOUNT_CONDITION),
 		format('/cast [noform,nomounted] %s', SPELL_TRAVEL_FORM),
-		format('/changeactionbar [form,noflying] [form,mod:%s] 1', MOD_DISMOUNT_FLYING),
-		format('/cancelform [form,noflying] [form,mod:%s]', MOD_DISMOUNT_FLYING),
-		format('/dismount [mounted,noflying] [mounted,mod:%s]', MOD_DISMOUNT_FLYING),
-		format('/run if UnitInVehicle("player") and SecureCmdOptionParse("[noflying][mod:%s]") then VehicleExit() end', MOD_DISMOUNT_FLYING),
 	}
 
 ------------------------------------------------------------------------
 elseif class == "SHAMAN" then
 	local SPELL_GHOST_WOLF = GetSpellInfo(2645)
-	MOUNT_CONDITION = format("[noform,nomounted,nocombat,outdoors,nomod:%s]", MOD_TRAVEL_FORM)
+	MOUNT_CONDITION = format('[noform,nomounted,nocombat,outdoors,nomod:%s]', MOD_TRAVEL_FORM)
 	MACRO_LINES = {
 		format('/run if SecureCmdOptionParse("%s") and not UnitInVehicle("player") and not IsPlayerMoving() then C_MountJournal.Summon(0) end', MOUNT_CONDITION),
 		format('/cast [noform,nomounted] %s', SPELL_GHOST_WOLF),
-		format('/cancelform [form,noflying] [form,mod:%s]', MOD_DISMOUNT_FLYING),
-		format('/dismount [mounted,noflying] [mounted,mod:%s]', MOD_DISMOUNT_FLYING),
-		format('/run if UnitInVehicle("player") and SecureCmdOptionParse("[noflying][mod:%s]") then VehicleExit() end', MOD_DISMOUNT_FLYING),
 	}
 
 ------------------------------------------------------------------------
 else
-	MOUNT_CONDITION = "[nomounted,nocombat,outdoors]"
+	MOUNT_CONDITION = '[nomounted,nocombat,outdoors]'
 	MACRO_LINES = {
 		format('/run if SecureCmdOptionParse("%s") and not UnitInVehicle("player") and not IsPlayerMoving() then C_MountJournal.Summon(0) end', MOUNT_CONDITION),
-		format('/cancelform [form,noflying] [form,mod:%s]', MOD_DISMOUNT_FLYING),
-		format('/dismount [mounted,noflying] [mounted,mod:%s]', MOD_DISMOUNT_FLYING),
-		format('/run if UnitInVehicle("player") and SecureCmdOptionParse("[noflying][mod:%s]") then VehicleExit() end', MOD_DISMOUNT_FLYING),
 	}
 end
 ------------------------------------------------------------------------
@@ -78,8 +76,11 @@ button:SetScript("OnEvent", function(self, event)
 			macro = macro .. "\n" .. line
 		end
 	end
+	for i = 1, #MACRO_TEMPLATE do
+		macro = macro .. "\n", MACRO_TEMPLATE[i]
+	end
 	macro = strsub(macro, 2)
-	
+
 	self:SetAttribute("macrotext", macro)
 end)
 
