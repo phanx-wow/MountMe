@@ -23,7 +23,7 @@ local MACRO_TEMPLATE = {
 ------------------------------------------------------------------------
 if class == "DRUID" then
 	local SPELL_TRAVEL_FORM = GetSpellInfo(783)
-	MOUNT_CONDITION = format('/run if SecureCmdOptionParse("[nocombat,noform,nomounted,noswimming,outdoors,nomod:%s]', MOD_TRAVEL_FORM)
+	MOUNT_CONDITION = format('[nocombat,noform,nomounted,noswimming,outdoors,nomod:%s]', MOD_TRAVEL_FORM)
 	MACRO_LINES = {
 		format('/run if SecureCmdOptionParse("%s") and not UnitInVehicle("player") and not IsPlayerMoving() then C_MountJournal.Summon(0) end', MOUNT_CONDITION),
 		format('/cast [noform,nomounted] %s', SPELL_TRAVEL_FORM),
@@ -48,7 +48,22 @@ end
 ------------------------------------------------------------------------
 
 local specials = {
-	[37011] = "/use %s %s", -- Magic Broom @ Hallow's End
+	function()
+		-- Vashj'ir Seahorse
+		for i = 1, C_MountJournal.GetNumMounts() do
+			local creatureName, spellID, _, _, isUsable = C_MountJournal.GetMountInfo(i)
+			if spellID == 75207 and isUsable and IsSubmerged() then
+				return format('/run if SecureCmdOptionParse("%s") and not UnitInVehicle("player") and not IsPlayerMoving() then C_MountJournal.Summon(%d) end', MOUNT_CONDITION, i)
+			end
+		end
+	end,
+	function()
+		-- Magic Broom @ Hallow's End
+		local count, name = GetItemCount(37011), GetItemInfo(37011)
+		if name and count > 0 then
+			return format("/use %s %s", MOUNT_CONDITION, name)
+		end
+	end,
 }
 
 button:RegisterEvent("PLAYER_LOGIN")
@@ -59,10 +74,10 @@ button:SetScript("OnEvent", function(self, event)
 	if InCombatLockdown() then return end
 
 	local MOUNT = MACRO_LINES[MOUNT_LINE]
-	for id, line in pairs(specials) do
-		local name = GetItemInfo(id)
-		if name and GetItemCount(id) > 0 then
-			MOUNT = format(line, MOUNT_CONDITION, name)
+	for i = 1, #specials do
+		local special = specials[i]()
+		if special then
+			MOUNT = special
 			break
 		end
 	end
@@ -77,7 +92,7 @@ button:SetScript("OnEvent", function(self, event)
 		end
 	end
 	for i = 1, #MACRO_TEMPLATE do
-		macro = macro .. "\n", MACRO_TEMPLATE[i]
+		macro = macro .. "\n" .. MACRO_TEMPLATE[i]
 	end
 	macro = strsub(macro, 2)
 
