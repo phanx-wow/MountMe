@@ -125,7 +125,6 @@ function button:Update(event)
 	if b then
 		SetOverrideBinding(self, false, b, "CLICK AnyFavoriteMountButton:LeftButton")
 	end
-	SetOverrideBinding(self, false, "CTRL-`", "CLICK AnyFavoriteMountButton:LeftButton")
 end
 
 button:SetScript("OnEvent", button.Update)
