@@ -1,4 +1,16 @@
 ## Interface: 60000
-## Notes: Du bist das Reittier, ich bin der Ross...
+## Version: 6.0.3.1
+
+## Title: SaddleUp
+## Notes: One button to mount, dismount, and use travel forms.
+## Notes-deDE: Ein Button, um zu aufsitzen, absitzen und Reisegestalten verwenden.
+## Notes-esES: Un botón para montar, desmontar y usar las formas de viaje.
+## Notes-esMX: Un botón para montar, desmontar y usar las formas de viaje.
+
+## Author: Phanx
+## X-Email: addons@phanx.net
+## X-Copyright: Copyright (c) 2014 Phanx.
+## X-License: All rights reserved.
+## X-CompatibleLocales: deDE, enUS, esES, esMX, frFR, itIT, koKR, ptBR, ruRU, zhCN, zhTW
 
 SaddleUp.lua
