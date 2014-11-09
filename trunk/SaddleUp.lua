@@ -101,32 +101,31 @@ end
 ------------------------------------------------------------------------
 
 function button:Update(event)
-	print(event)
-	if not InCombatLockdown() then
-		local useMount
-		local useForm = GetTravelForm and GetTravelForm()
-		local safetyCheck = not GetCVarBool("autoDismountFlying") and format(SAFE_DISMOUNT, MOD_DISMOUNT_FLYING)
-		for id, line in pairs(mountItems) do
-			if GetItemCount(id) > 0 then
-				useMount = format(line, GetMountCondition(), GetItemInfo(id))
-				break
-			end
-		end
-		if not useMount then
-			useMount = GetMount()
-		end
-		self:SetAttribute("macrotext", strtrim(strjoin("\n", useMount or "", useForm or "", safetyCheck or "", DISMOUNT)))
+	if InCombatLockdown() then return end
 
-		ClearOverrideBindings(self)
-		local a, b = GetBindingKey("DISMOUNT")
-		if a then
-			SetOverrideBinding(self, false, a, "CLICK AnyFavoriteMountButton:LeftButton")
+	local useMount
+	local useForm = GetTravelForm and GetTravelForm()
+	local safetyCheck = not GetCVarBool("autoDismountFlying") and format(SAFE_DISMOUNT, MOD_DISMOUNT_FLYING)
+	for id, line in pairs(mountItems) do
+		if GetItemCount(id) > 0 then
+			useMount = format(line, GetMountCondition(), GetItemInfo(id))
+			break
 		end
-		if b then
-			SetOverrideBinding(self, false, b, "CLICK AnyFavoriteMountButton:LeftButton")
-		end
-		SetOverrideBinding(self, false, "CTRL-`", "CLICK AnyFavoriteMountButton:LeftButton")
 	end
+	if not useMount then
+		useMount = GetMount()
+	end
+	self:SetAttribute("macrotext", strtrim(strjoin("\n", useMount or "", useForm or "", safetyCheck or "", DISMOUNT)))
+
+	ClearOverrideBindings(self)
+	local a, b = GetBindingKey("DISMOUNT")
+	if a then
+		SetOverrideBinding(self, false, a, "CLICK AnyFavoriteMountButton:LeftButton")
+	end
+	if b then
+		SetOverrideBinding(self, false, b, "CLICK AnyFavoriteMountButton:LeftButton")
+	end
+	SetOverrideBinding(self, false, "CTRL-`", "CLICK AnyFavoriteMountButton:LeftButton")
 end
 
 button:SetScript("OnEvent", button.Update)
