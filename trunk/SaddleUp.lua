@@ -21,7 +21,6 @@ local SAFE_DISMOUNT = "/stopmacro [flying,nomod:%s]"
 local DISMOUNT = [[
 /leavevehicle [canexitvehicle]
 /dismount [mounted]
-/cancelform [form]
 ]]
 
 local function HasRidingSkill(flyingOnly)
@@ -62,9 +61,10 @@ if select(2, UnitClass("player")) == "DRUID" then
 	end
 
 	local CAT_FORM_ID, TRAVEL_FORM_ID = 768, 783
-	local CAT_FORM, TRAVEL_FORM = GetSpellInfo(CAT_ID), GetSpellInfo(TRAVEL_ID)
+	local CAT_FORM, TRAVEL_FORM = GetSpellInfo(CAT_FORM_ID), GetSpellInfo(TRAVEL_FORM_ID)
 
 	MOUNT_CONDITION = format("[outdoors,nocombat,nomounted,noform,novehicleui,nomod:%s]", MOD_TRAVEL_FORM)
+	DISMOUNT = DISMOUNT .. "\n/cancelform [form]"
 
 	function GetAction()
 		-- TODO: handle Glyph of the Stag (separate Flight Form)
@@ -89,6 +89,7 @@ elseif select(2, UnitClass("player")) == "SHAMAN" then
 	local GHOST_WOLF = GetSpellInfo(GHOST_WOLF_ID)
 
 	MOUNT_CONDITION = format("[outdoors,nocombat,nomounted,noform,novehicleui,nomod:%s]", MOD_TRAVEL_FORM)
+	DISMOUNT = DISMOUNT .. "\n/cancelform [form]"
 
 	function GetAction()
 		-- TODO: handle Glyph of Ghostly Speed (GW = ground mount OOC)
